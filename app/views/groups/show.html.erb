@@ -1,0 +1,63 @@
+
+<div class="row">
+  <% if current_user.admin? %>
+    <div class="col-md-4 margin-left">
+      <%= link_to "Add Members", invite_path(@group), class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>
+<div class="row">
+  <div class="col-md-3"></div>
+  <div class="col-md-6">
+    <div class="row">
+      <div class="border">
+        <div class="row">
+          <div class="col-md-3">
+            <h4 class="fonts center">Name</h4>
+          </div>
+          <div class="col-md-3">
+            <h4 class="fonts center">Email</h4>
+          </div>
+          <div class="col-md-3">
+            <h4 class="fonts center">Phone Number</h4>
+          </div>
+          <% if current_user.admin? %>
+            <div class="col-md-3">
+              <h4 class="fonts center">Delete User</h4>
+            </div>
+          <% else %>
+            <div class="col-md-3"></div>
+          <% end %>
+        </div>
+        <br>
+
+        <% @users.each do |user| %>
+          <div class="border-bottom"></div>
+          <div class="row">
+            <div class="col-md-3">
+              <h6 class="white"><%= user.first_name %></h6>
+            </div>
+            <div class="col-md-3">
+              <h6 class="white"><%= user.email %> </h6>
+            </div>
+            <div class="col-md-3">
+              <h6 class="white"> <%= user.phone_number %> </h6>
+            </div>
+            <% if current_user.admin? %>
+              <div class="col-md-3 center">
+                <div class="padding">
+                  <%= link_to "Delete", memberdestroy_group_path(user_id: user.id), class: "btn btn-primary " %>
+                </div>
+              </div>
+            <% else %>
+              <div class="col-md-3 center"></div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3"></div>
+</div>
+
+

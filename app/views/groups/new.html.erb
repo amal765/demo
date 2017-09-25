@@ -1,0 +1,28 @@
+
+<span class="white"><h1>Create Group </h1></span>
+ <div class="form">
+  <%= form_for(@group) do |f| %>
+    <div class="field">
+      <div class="col-md-12">
+        <%= f.label :name, :class => "font" %><br />
+      </div>
+    </div>
+    <%= f.text_field :name, autofocus: true %>
+    <div class="field">
+      <div class="col-md-12">
+        <%= f.label :maximum_number_of_users, :class => "font" %><br />
+      </div>
+      <%= f.text_field :max_members, autocomplete: "off" %>
+    </div>
+    <div class="field">
+      <div class="col-md-12">
+        <%= f.label :group_image, :class => "font" %><br />
+      </div>
+      <%= f.file_field :image%>
+    </div>
+    <div class="actions">
+      <%= f.submit "Create" %>
+    </div>
+  <% end %>
+</div>
+

@@ -1,0 +1,61 @@
+
+
+<div class="row ">
+  <div class="col-md-4"></div>
+  <div class="col-md-4 group">
+    <div class="profilepage center ">
+      <p><h1 class="white"> Profile</h1></p>
+          <% if @user.picture? %>
+            <p><%= image_tag @user.picture.url %></p>
+          <% else %>
+            <p><%= image_tag("03.jpg") %></p>
+          <% end %>
+        </div>
+        <div class="row ">
+          <% unless current_user.admin? %>
+            <div class="row white">
+                <div class="col-md-4 ">
+                    <h4>Name:</h4>
+                  </div>
+                  <div class="col-md-6 left">
+                    <h4><%= @user.full_name %></h4>
+                  </div>
+                </div>
+                <div class="row white">
+                  <div class="col-md-4 ">
+                    <h4>Email:</h4>
+                  </div>
+                  <div class="col-md-6 left">
+                    <h4><%= @user.email %></h4>
+                  </div>
+                </div>
+                    <div class="row white">
+                  <div class="col-md-4">
+                    <h4>DOB:</h4>
+                  </div>
+                  <div class="col-md-6 left">
+                    <h4><%= @user.dob %></h4>
+                  </div>
+                </div>
+                <div class="row white">
+                  <div class="col-md-4 ">
+                    <h4>Mobile:</h4>
+                  </div>
+                  <div class="col-md-6 left">
+                    <h4><%= @user.phone_number %></h4>
+                  </div>
+                </div>
+
+          <% end %>
+        </div>
+        <%= form_for(@user) do |f| %>
+          <p><%= f.file_field :picture, class: "", autofocus: true %></p>
+          <p><%= f.submit "Upload", class: "btn btn-primary fullWidth " %></p>
+          <p><%= link_to "Reset Password", edit_user_registration_path, class: "btn btn-primary fullWidth" %></p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4"></div>
+</div>
+
