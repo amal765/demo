@@ -1,10 +1,7 @@
 class GroupsController < ApplicationController
 
-  def new
-    @group = Group.new
-  end
-
   def index
+    @group = Group.new
     if current_user.admin?
       @groups = Group.all
     else
@@ -15,33 +12,48 @@ class GroupsController < ApplicationController
   def create
     @group = Group.new(group_params)
     authorize @group
-    if @group.save
-      redirect_to root_path
-    else
-      render 'new'
+    respond_to do |format|
+      if @group.save
+        format.js
+      else
+        render 'index'
+      end
     end
   end
 
   def show
     @group = Group.find(params[:id])
-    @users = @group.users.where.not(id: current_user.id, first_name: nil)
+    @users = @group.users.where.not(id: current_user.id)
+    @count = @group.users.count
+    @task = Task.new
+    @tasks = @group.tasks
+    @jobs = current_user.tasks.where(group_id: @group.id)
   end
 
   def destroy
     @group = Group.find(params[:id])
     authorize @group
-    @group.destroy
-    redirect_to root_path
+    respond_to do |format|
+      if @group.destroy
+        @groups = Group.all
+        format.js
+      end
+    end
   end
 
-  def memberdestroy
+  def member_destroy
     @group = Group.find(params[:id])
     @user = User.find(params[:user_id])
-    @group.users.delete(@user)
-    if current_user.admin?
-      redirect_to group_path
-    else
-      redirect_to root_path
+    respond_to do |format|
+      @group.users.delete(@user)
+      @user.tasks.destroy_all
+      if current_user.admin?
+        @users = @group.users
+        format.js
+      else
+        @groups = current_user.groups
+        format.js
+      end
     end
   end
 

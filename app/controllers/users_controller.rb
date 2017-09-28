@@ -2,15 +2,9 @@ class UsersController < ApplicationController
   def new
     @user = User.new
   end
-  # def index
-  #   role_id = current_user.role_id
-  #   @role = Role.find(role_id)
-  #   @groups = Group.all
-  # end
-
   def show
     @user = User.find(params[:id])
-    @role = Role.find(@user.role_id)
+    @role = @user.role
   end
   def edit
     @user = current_user
@@ -21,46 +15,44 @@ class UsersController < ApplicationController
     @user.update_attributes(user_params)
     redirect_to user_path
   end
-  def invite
-    @user = User.new
-    @group = Group.find(params[:id])
-  end
 
   def inviter
 
     @user = User.find_by(email: params[:user][:email])
     @group = Group.find_by(id: params[:user][:group_id])
-    if @group.users.count(@group.id) < @group.max_members
-      if @user.present?
-        if !@group.users.find_by(id: @user.id).present?
-          @group.users << @user
-          UserMailer.invite_email(@user).deliver
-          flash[:info] = "Invited Successully"
-          redirect_to group_path(@group)
+    respond_to do |format|
+      if @group.users.count(@group.id) < @group.max_members
+        if @user.present?
+          if !@group.users.find_by(id: @user.id).present?
+            @group.users << @user
+            UserMailer.invite_email(@user).deliver
+            flash[:info] = "Invited Successully"
+            format.js
+          else
+            flash[:info] = "Already Present In Group"
+          end
+
         else
-          flash[:info] = "Already Present In Group"
-          redirect_to group_path(@group)
+          @user = User.new(user_params)
+          @user.save(validate: false)
+          @group.users << @user
+          UserMailer.invite_email_two(@user).deliver
+          flash[:info] = "Invited Successully"
+          format.js
         end
+
       else
-        @user = User.new(user_params)
-        @user.save(validate: false)
-        @group.users << @user
-        UserMailer.invite_email_two(@user).deliver
-        flash[:info] = "Invited Successully"
-        redirect_to group_path(@group)
+        flash[:info] = "Group Limit Reached"
       end
-    else
-      flash[:info] = "Group Limit Reached"
-      redirect_to group_path(@group)
     end
   end
+
 
   def custom_new
     @user = User.find(params[ :id])
   end
 
   def custom_update
-
     @user = User.find_by(id: params[:user][:id])
     @user.update_attributes(user_params)
     redirect_to root_path

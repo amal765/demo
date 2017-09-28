@@ -1,0 +1,5 @@
+<% if current_user.admin? %>
+  $('#user_table').html("<%= j render partial: 'member_details' %>");
+<% else %>
+  $('#group_table').html("<%= j render partial: 'group_partial' %>");
+<% end %>

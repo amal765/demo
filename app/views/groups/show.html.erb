@@ -1,63 +1,246 @@
-
-<div class="row">
-  <% if current_user.admin? %>
-    <div class="col-md-4 margin-left">
-      <%= link_to "Add Members", invite_path(@group), class: "btn btn-primary" %>
+<div class="row padding">
+  <div class="col-md-2">
+    <% if @group.image? %>
+      <p><%= image_tag @group.image.url, class: "center img-circle margin-left padding" %></p>
+    <% end %>
+  </div>
+  <div class="col-md-10">
+    <div>
+      <h3 class="fonts left padding"><%= @group.name %> </h3>
     </div>
-  <% end %>
-</div>
-<div class="row">
-  <div class="col-md-3"></div>
-  <div class="col-md-6">
-    <div class="row">
-      <div class="border">
-        <div class="row">
-          <div class="col-md-3">
-            <h4 class="fonts center">Name</h4>
-          </div>
-          <div class="col-md-3">
-            <h4 class="fonts center">Email</h4>
-          </div>
-          <div class="col-md-3">
-            <h4 class="fonts center">Phone Number</h4>
-          </div>
-          <% if current_user.admin? %>
-            <div class="col-md-3">
-              <h4 class="fonts center">Delete User</h4>
-            </div>
-          <% else %>
-            <div class="col-md-3"></div>
-          <% end %>
-        </div>
-        <br>
-
-        <% @users.each do |user| %>
-          <div class="border-bottom"></div>
-          <div class="row">
-            <div class="col-md-3">
-              <h6 class="white"><%= user.first_name %></h6>
-            </div>
-            <div class="col-md-3">
-              <h6 class="white"><%= user.email %> </h6>
-            </div>
-            <div class="col-md-3">
-              <h6 class="white"> <%= user.phone_number %> </h6>
-            </div>
-            <% if current_user.admin? %>
-              <div class="col-md-3 center">
-                <div class="padding">
-                  <%= link_to "Delete", memberdestroy_group_path(user_id: user.id), class: "btn btn-primary " %>
-                </div>
-              </div>
-            <% else %>
-              <div class="col-md-3 center"></div>
-            <% end %>
-          </div>
-        <% end %>
-      </div>
+    <%= countdown Time.now %>
+    <div>
+      <h4 class="left padding">Maximum Members: <%= @group.max_members %> </h4>
+    </div>
+    <div>
+      <h4 class="left padding">Total Members: <%= @count %> </h4>
     </div>
   </div>
-  <div class="col-md-3"></div>
 </div>
 
+
+<div class="row">
+  <div class="col-md-2"></div>
+
+
+  <div class="col-md-8">
+    <ul class="nav nav-tabs ">
+      <li class="active"><a data-toggle="pill" href="#users">Users</a></li>
+      <li><a data-toggle="pill" href="#tasks">Tasks</a></li>
+    </ul>
+  </div>
+
+
+
+  <div class="col-md-2"></div>
+</div>
+
+<div class="tab-content">
+  <div id="users" class="tab-pane fade in active">
+    <div class="row">
+      <div class="col-md-2"></div>
+      <div class="col-md-8">
+        <div class="row">
+          <div class="col-md-8">
+
+            <div class="">
+              <div class="row">
+                <div class="col-md-2">
+                  <h4 class="fonts center">Name</h4>
+                </div>
+                <div class="col-md-3">
+                  <h4 class="fonts center">Email</h4>
+                </div>
+                <div class="col-md-3">
+                  <h4 class="fonts center">Phone Number</h4>
+                </div>
+                <div class="col-md-2">
+                  <h4 class="fonts center">Status</h4>
+                </div>
+                <% if current_user.admin? %>
+                  <div class="col-md-2">
+                    <h4 class="fonts center">Delete User</h4>
+                  </div>
+                <% else %>
+                  <div class="col-md-2"></div>
+                <% end %>
+              </div>
+              <br>
+              <div id="user_table">
+                <%= render partial: 'member_details' %>
+              </div>
+            </div>
+          </div>
+          <% if current_user.admin? %>
+            <div class="col-md-4">
+              <div class="invite">
+                <div class="field padding">
+                  <%= form_for :user, :url=>{:controller=>"users", :action=>"inviter"}, html: {id: "invite_form"}, remote: true   do |f|%>
+                    <%= f.hidden_field :group_id, :value => @group.id %>
+                    <p><%= f.email_field :email, autofocus: true, class: "fullWidth padding" %></p>
+                    <%= f.submit "Invite Member", class: "btn btn-primary center fullWidth" %>
+                <% end %>
+               </div>
+              </div>
+            </div>
+          <% end %>
+
+        </div>
+      </div>
+      <div class="col-md-2"></div>
+    </div>
+  </div>
+  <div id="tasks" class="tab-pane fade">
+    <% if current_user.admin? %>
+      <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+          <h2> All Tasks </h2>
+          <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="pill" href="#assign">Assign Tasks</a></li>
+            <li><a data-toggle="pill" href="#status">Status</a></li>
+          </ul>
+        </div>
+        <div class="col-md-3"></div>
+      </div>
+      <div class="tab-content">
+        <div id="assign" class="tab-pane fade">
+          <div class="col-md-3"></div>
+          <div class="col-md-6">
+            <br>
+              <%= form_for :task, :url=>{:controller=>"tasks", :action=>"create"}, html: {id: "create_task"}, remote: true   do |f|%>
+                <p><%= f.text_field :name, autofocus: true, class: "halfWidth padding formInput", placeholder: "Add Task"%></p>
+                <p><%= f.text_field :duration, autofocus: true, placeholder: "Duration", class: "halfWidth padding formInput" %></p>
+                <p ><%= f.select :user_id, @users.all.collect {|p| [ p.email, p.id ]}  %></p>
+
+                <p><%= f.submit "Assign Task", class: "btn btn-primary halfWidth formInput" %></p>
+              <% end %>
+
+          </div>
+          <div class="col-md-3"></div>
+        </div>
+        <div id="status" class="tab-pane fade">
+          <div class="col-md-3"></div>
+          <div class="col-md-6">
+            <div class="row">
+              <div class="col-md-3">
+                <h4> Task </h4>
+              </div>
+              <div class="col-md-3">
+                <h4> User </h4>
+              </div>
+              <div class="col-md-3">
+                <h4> Duration </h4>
+              </div>
+              <div class="col-md-3">
+                <h4> Status </h4>
+              </div>
+            </div>
+
+            <% @tasks.each do |task| %>
+            <div class="row">
+              <div class="col-md-3">
+                <p><%= task.name %></p>
+              </div>
+              <div class="col-md-3">
+                <p><%= task.user.full_name %></p>
+              </div>
+              <div class="col-md-3">
+                <p><%= task.duration %></p>
+              </div>
+              <div class="col-md-3">
+                <%= task.status %>
+
+              </div>
+            </div>
+            <% end %>
+
+          </div>
+          <div class="col-md-3"></div>
+        </div>
+
+      </div>
+    <% else %>
+      <br>
+      <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+          <div class="row">
+            <div class="col-md-3">
+              <h4> Task </h4>
+            </div>
+            <div class="col-md-3">
+              <h4> Duration </h4>
+            </div>
+            <div class="col-md-3">
+              <h4> Status </h4>
+            </div>
+            <div class="col-md-3">
+              <h4>Update Status </h4>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3"></div>
+      </div>
+      <br>
+      <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+          <% @jobs.each do |f| %>
+            <div class="row">
+              <div class="col-md-3">
+                <p><%= f.name %></p>
+              </div>
+              <div class="col-md-3">
+                <p><%= f.duration %></p>
+              </div>
+              <div class="col-md-3">
+                <p><%= f.status %></p>
+              </div>
+              <div class="col-md-3">
+                <p><button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal">Update</button></p>
+              </div>
+            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="myModal" role="dialog">
+              <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h3 class="modal-title center ">Work Status</h3>
+                  </div>
+                  <div class="modal-body center">
+                    <br>
+                    <% if f.status == "pending" %>
+                      <div id="start_button">
+                        <span ><%= link_to "Start Work",task_path(f), method: :patch,  class: "btn btn-info btn-lg"%></span>
+                      </div>
+                    <% elsif f.status == "Completed" %>
+                      <div> <h2> Completed!! </h2> </div>
+                    <% else %>
+                      <span > <span ><%= link_to "Completed",task_path(f), method: :patch,  class: "btn btn-success btn-lg"%></span>
+                      <button type="button" class="btn btn-warning btn-lg" data-toggle="modal" data-target="#">Pending</button></span>
+                      </div>
+                    <% end %>
+
+                    <br>
+                    <br>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          <% end %>
+        </div>
+      </div>
+      <div class="col-md-3"></div>
+    <% end %>
+  </div>
+</div>
 

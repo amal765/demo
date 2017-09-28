@@ -1,0 +1,33 @@
+
+  <div class="border-bottom"></div>
+  <div class="row">
+    <div class="col-md-2">
+      <h6 class="white"><%= @user.first_name %></h6>
+    </div>
+    <div class="col-md-3">
+      <h6 class="white"><%= @user.email %> </h6>
+    </div>
+    <div class="col-md-3">
+      <h6 class="white"> <%= @user.phone_number %> </h6>
+    </div>
+    <% if @user.activated? %>
+      <div class="col-md-2">
+        <h6 class="white">Activated</h6>
+      </div>
+    <% else %>
+      <div class="col-md-2">
+        <h6 class="white">Pending</h6>
+      </div>
+    <% end %>
+    <% if current_user.admin? %>
+      <div class="col-md-2 center">
+        <div class="padding">
+          <%= link_to "Delete", member_destroy_group_path(user_id: @user.id, id: @group.id), remote: true, class: "btn btn-primary " %>
+        </div>
+      </div>
+    <% else %>
+      <div class="col-md-2 center"></div>
+    <% end %>
+  </div>
+
+

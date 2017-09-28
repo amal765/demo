@@ -6,6 +6,7 @@
 
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_include_tag 'countdown' %>
     <script type="text/javascript">
       $( function() {
       $( ".datepicker" ).datepicker();
@@ -45,6 +46,11 @@
     <br>
     <br>
     <div class="row">
+      <div class="container">
+      <% flash.each do |message_type, message| %>
+        <div class="alert alert-<%= message_type %>"><%= message %> </div>
+      <% end %>
+    </div>
       <%= yield %>
     </div>
      <% if signed_in? %>
