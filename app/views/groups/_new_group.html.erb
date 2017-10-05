@@ -10,7 +10,7 @@
             <h4 class="white">limit:<%= @group.max_members %></h4>
             <% if current_user.admin? %>
               <div class="col-md-4 fullWidth">
-                <%= link_to "Delete", group_path(@group), method: :delete, remote: true, class: "btn btn-primary fullWidth" %>
+                <%= link_to 'Delete', delete_modal_group_path(@group),  {:remote => true, :class =>"btn btn-primary fullWidth"}  %>
               </div>
             <% else %>
               <div class="col-md-4 fullWidth">
@@ -18,3 +18,5 @@
               </div>
             <% end %>
           </div>
+
+

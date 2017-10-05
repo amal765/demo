@@ -19,3 +19,11 @@
 //= require jquery-ui
 //= require jquery.countdown
 //= require jquery.countdown-es
+
+    $( function() {
+      $( ".datepicker" ).datepicker({ dateFormat: 'dd-mm-yy',
+      changeMonth: true,
+      changeYear: true,
+      yearRange: '1960:' + (new.Date).getFullYear() });
+    } );
+

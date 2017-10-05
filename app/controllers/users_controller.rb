@@ -2,11 +2,17 @@ class UsersController < ApplicationController
   def new
     @user = User.new
   end
+
   def show
     @user = User.find(params[:id])
     @role = @user.role
   end
+
   def edit
+    @user = current_user
+  end
+
+  def profile_edit
     @user = current_user
   end
 
@@ -17,35 +23,22 @@ class UsersController < ApplicationController
   end
 
   def inviter
-
     @user = User.find_by(email: params[:user][:email])
     @group = Group.find_by(id: params[:user][:group_id])
     respond_to do |format|
-      if @group.users.count(@group.id) < @group.max_members
-        if @user.present?
-          if !@group.users.find_by(id: @user.id).present?
-            @group.users << @user
-            UserMailer.invite_email(@user).deliver
-            flash[:info] = "Invited Successully"
-            format.js
-          else
-            flash[:info] = "Already Present In Group"
-          end
-
+      if !@user.present?
+        @user = User.new(user_params)
+        if @user.save
+          display
         else
-          @user = User.new(user_params)
-          @user.save(validate: false)
-          @group.users << @user
-          UserMailer.invite_email_two(@user).deliver
-          flash[:info] = "Invited Successully"
-          format.js
+          format.js {render 'error.js.erb'}
         end
-
       else
-        flash[:info] = "Group Limit Reached"
+        display
       end
     end
   end
+
 
 
   def custom_new
@@ -69,6 +62,20 @@ class UsersController < ApplicationController
     end
 
     def group_params
-      params.require(:group).permit(:name, :image, :max_members)
+      params.require(:group).permit(:name, :image, :max_members, :group_id)
     end
+
+  protected
+
+      def display
+        reg_object = NewRegistrationService.new({user: @user, group: @group}).limit?
+        if reg_object
+          @user = User.find_by(email: params[:user][:email])
+          format.js {render 'inviter.js.erb'}
+          flash[:info] = "Invited Successully"
+        else
+          flash[:info] = "Group Limit Reached or User Already present"
+          format.js {render 'reload.js.erb'}
+        end
+      end
 end

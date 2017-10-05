@@ -1,0 +1,16 @@
+<% @tasks.each do |task| %>
+  <div class="row">
+    <div class="col-md-3">
+      <p><%= task.name %></p>
+    </div>
+    <div class="col-md-3">
+      <p><%= task.user.full_name %></p>
+    </div>
+    <div class="col-md-3">
+      <p><%= task.duration %></p>
+    </div>
+    <div class="col-md-3">
+      <%= task.status %>
+    </div>
+  </div>
+<% end %>
