@@ -9,9 +9,14 @@ class User < ApplicationRecord
   mount_uploader :picture, PictureUploader
   validates :first_name, presence: true, length: {maximum: 50}, on: :update
   validates :last_name, presence: true, length: {maximum: 50}, on: :update
-  validates :phone_number, presence: true, length: {minimum: 10}, on: :update
+  validates :phone_number, presence: true,  numericality: true, length: {minimum: 10}, on: :update
+  validates :dob, presence: true, on: :update
 
-  validates :password, presence: true, length: { minimum: 6 }, on: :update
+  # validates :first_name, presence: true, length: {maximum: 50}, on: :custom_update
+  # validates :last_name, presence: true, length: {maximum: 50}, on: :custom_update
+  # validates :phone_number, presence: true,  numericality: true, length: {minimum: 10}, on: :custom_update
+  # validates :dob, presence: true, on: :custom_update
+  validates :password, presence: true, length: { minimum: 6 }, on: :custom_update
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
                       validates :email,presence: true, length: {maximum: 255},
                       format: {with: VALID_EMAIL_REGEX},
@@ -37,13 +42,7 @@ class User < ApplicationRecord
     end
   end
 
-  protected
+  private
 
-    def password_required?
-      false
-    end
 
-    def email_required?
-      true
-    end
 end

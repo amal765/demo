@@ -2,11 +2,7 @@
             <div class="row ">
               <h3 class="white"><%= @group.name %></h3>
             </div>
-            <% if @group.image? %>
               <%= link_to  image_tag(@group.image.url), group_path(@group), class: "center" %>
-            <% else %>
-              <%= link_to image_tag("03.jpg"), group_path(@group), class: " center" %>
-            <% end %>
             <h4 class="white">limit:<%= @group.max_members %></h4>
             <% if current_user.admin? %>
               <div class="col-md-4 fullWidth">

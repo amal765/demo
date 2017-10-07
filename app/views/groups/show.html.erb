@@ -25,8 +25,8 @@
 
   <div class="col-md-8">
     <ul class="nav nav-tabs ">
-      <li class="active"><a data-toggle="pill" href="#users">Users</a></li>
-      <li><a data-toggle="pill" href="#tasks">Tasks</a></li>
+      <li  class="active"><a data-toggle="pill" href="#users">Users</a></li>
+      <li id="t"><a  data-toggle="pill" href="#tasks">Tasks</a></li>
     </ul>
   </div>
 
@@ -36,7 +36,7 @@
 </div>
 
 <div class="tab-content">
-  <div id="users" class="tab-pane fade in active">
+  <div id="users" class="tab-content tab-pane fade in active">
     <div class="row">
       <div class="col-md-2"></div>
       <div class="col-md-8">
@@ -77,10 +77,11 @@
               </div>
               <div class="invite">
                 <div class="field padding">
-                  <%= form_for @user, :url=>{:controller=>"users", :action=>"inviter"}, html: {id: "invite_form"}, remote: true   do |f|%>
+                  <%= form_for @user, :url=>{:controller=>"users", :action=>"inviter"}, html: {id: "invite_form"}, remote: true, validate: true   do |f|%>
                     <%= f.hidden_field :group_id, :value => @group.id %>
                     <%= f.hidden_field :role_id, :value => '2' %>
-                    <p><%= f.email_field :email, autofocus: true, class: "fullWidth padding" %></p>
+                    <%= f.hidden_field :password, :value =>  @generated_password %>
+                    <p><%= f.email_field :email, class: "fullWidth padding" %></p>
                     <%= f.submit "Invite Member", class: "btn btn-primary center fullWidth" %>
                 <% end %>
                </div>
@@ -93,7 +94,7 @@
       <div class="col-md-2"></div>
     </div>
   </div>
-  <div id="tasks" class="tab-pane fade">
+  <div id="tasks" class="tab-content tab-pane in">
     <% if current_user.admin? %>
       <div class="row">
         <div class="col-md-7">
@@ -129,15 +130,26 @@
             <div id="task_error">
             </div>
             <br>
-            <%= form_for @task, html: {id: "create_task"}, remote: true   do |f|%>
-              <p><%= f.text_field :name, autofocus: true, class: "halfWidth padding formInput", placeholder: "Add Task"%></p>
-              <p><%= f.text_field :duration, autofocus: true, placeholder: "Duration", class: "halfWidth padding formInput" %></p>
-              <p ><%= f.select :user_id, @users.all.collect {|p| [ p.email, p.id ]}  %></p>
-
-              <%= f.hidden_field :group_id, value: @group.id %>
-
-              <p><%= f.submit "Assign Task", class: "btn btn-primary halfWidth formInput" %></p>
-            <% end %>
+            <div class="row">
+              <%= form_for(@task,validate: true, remote: true, html: {id: "create_task"})  do |f|%>
+                <div class="row">
+                  <%= f.text_field :name, autofocus: true, class: "halfWidth padding formInput", placeholder: "Add Task"%>
+                </div>
+                <br>
+                <div class="row">
+                  <%= f.text_field :duration, placeholder: "Duration", class: "halfWidth padding formInput" %>
+                </div>
+                <br>
+                <div class="row">
+                  <%= f.select :user_id, @users.all.collect {|p| [ p.email, p.id ]}  %>
+                </div>
+                <br>
+                <%= f.hidden_field :group_id, value: @group.id %>
+                <div class="row">
+                  <%= f.submit "Assign Task", class: "btn btn-primary halfWidth formInput" %>
+                </div>
+              <% end %>
+            </div>
           </div>
 
         </div>
@@ -232,4 +244,13 @@
     <% end %>
   </div>
 </div>
+<!-- <script type="text/javascript">
+  $(document).ready(function(){
+        $("#t").click(function(){
+          $("#users").removeClass('active');
+          $("#tasks").addClass('active');
 
+        });
+    })
+</script>
+ -->

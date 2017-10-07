@@ -2,11 +2,7 @@ class GroupsController < ApplicationController
 
   def index
     @group = Group.new
-    if current_user.admin?
-      @groups = Group.all
-    else
-      @groups = current_user.groups
-    end
+    @groups = policy_scope(Group)
   end
 
   def new
@@ -16,6 +12,7 @@ class GroupsController < ApplicationController
     authorize @group
     respond_to do |format|
       if @group.save
+        flash[:info] = "Group Created"
         format.js
       else
         format.js {render 'reload.js.erb'}
@@ -25,9 +22,11 @@ class GroupsController < ApplicationController
 
   def show
     @group = Group.find(params[:id])
+    authorize @group
     @users = @group.users.where.not(id: current_user.id)
     @task = Task.new
     @user = User.new
+    @generated_password = Devise.friendly_token.first(8)
     @tasks = @group.tasks
     @jobs = @tasks.where(user_id: current_user.id)
   end
@@ -37,6 +36,7 @@ class GroupsController < ApplicationController
     authorize @group
     respond_to do |format|
       if @group.destroy
+        flash[:info] = "Group Deleted"
         @groups = Group.all
         format.js
       end

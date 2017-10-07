@@ -1,10 +1,11 @@
 
 <div class="login-page">
   <div class="form">
+  <%= render 'user_error' %>
 
   <span class="color center">  <h2>Edit Profile</h2> </span>
 
-    <%= form_for(@user) do |f| %>
+    <%= form_for(@user, validate: true) do |f| %>
 
 
       <div class="field">
@@ -18,9 +19,9 @@
       </div>
 
       <div class="field">
-        <%= f.label :dob %><br />
+        <%= f.label :dob %><br/>
 
-        <%= f.text_field :dob, value: @user.dob.strftime("%m/%d/%Y"), class: "datepicker" %>
+        <%= f.date_field :dob, value: @user.dob.strftime("%m/%d/%Y"), id: "datepicker" %>
       </div>
 
       <div class="field">
@@ -36,3 +37,8 @@
   </div>
 </div>
 
+<script type="text/javascript">
+  $( function() {
+      $( "#datepicker" ).datepicker({ dateFormat: 'dd-mm-yy',changeMonth: true, changeYear: true,yearRange: '1990:' + (new Date).getFullYear()});
+    } );
+</script>

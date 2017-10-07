@@ -23,7 +23,7 @@
 
             <div class="groupForm">
 
-              <%= form_for(@group, remote: true, html: {id: "reset_form"}) do |f| %>
+              <%= form_for(@group, validate: true, remote: true, html: {id: "reset_form"}) do |f| %>
                 <div id="group_error">
                 </div>
                 <div class="row">

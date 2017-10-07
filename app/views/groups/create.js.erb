@@ -1,3 +1,4 @@
 $('#group_table').append("<%= j render partial: 'new_group' %>");
 $('#reset_form')[0].reset();
 $('#group_error').html("<%= j render partial: 'group_errors' %>");
+$('#flash_message').html("<%= j render partial: 'layouts/flash' %>");

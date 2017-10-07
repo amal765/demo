@@ -5,6 +5,7 @@ class UsersController < ApplicationController
 
   def show
     @user = User.find(params[:id])
+    authorize @user
     @role = @user.role
   end
 
@@ -18,37 +19,27 @@ class UsersController < ApplicationController
 
   def update
     @user = User.find(params[ :id])
-    @user.update_attributes(user_params)
-    redirect_to user_path
-  end
-
-  def inviter
-    @user = User.find_by(email: params[:user][:email])
-    @group = Group.find_by(id: params[:user][:group_id])
-    respond_to do |format|
-      if !@user.present?
-        @user = User.new(user_params)
-        if @user.save
-          display
-        else
-          format.js {render 'error.js.erb'}
-        end
-      else
-        display
-      end
+    if @user.update(user_params)
+      render 'show'
+    else
+      render 'profile_edit'
     end
   end
 
-
-
-  def custom_new
-    @user = User.find(params[ :id])
-  end
-
-  def custom_update
-    @user = User.find_by(id: params[:user][:id])
-    @user.update_attributes(user_params)
-    redirect_to root_path
+  def inviter
+    authorize @user
+    @user = User.find_by(email: params[:user][:email])
+    @group = Group.find_by(id: params[:user][:group_id])
+    if !@user.present?
+      @user = User.new(user_params)
+      if @user.save
+        display
+      else
+        error
+      end
+    else
+      display
+    end
   end
 
   private
@@ -62,20 +53,28 @@ class UsersController < ApplicationController
     end
 
     def group_params
-      params.require(:group).permit(:name, :image, :max_members, :group_id)
+      params.require(:group).permit(:name, :image, :max_members, :group_id, :picture)
     end
 
   protected
 
       def display
         reg_object = NewRegistrationService.new({user: @user, group: @group}).limit?
-        if reg_object
-          @user = User.find_by(email: params[:user][:email])
-          format.js {render 'inviter.js.erb'}
-          flash[:info] = "Invited Successully"
-        else
-          flash[:info] = "Group Limit Reached or User Already present"
-          format.js {render 'reload.js.erb'}
+        respond_to do |format|
+          if reg_object
+            @user = User.find_by(email: params[:user][:email])
+            flash[:info] = "Invited Successully"
+            format.js {render 'inviter.js.erb'}
+          else
+            flash[:info] = "Group Limit Reached or User Already present"
+            format.js {render 'reload.js.erb'}
+          end
+        end
+      end
+
+      def error
+        respond_to do |format|
+          format.js {render 'error.js.erb'}
         end
       end
 end

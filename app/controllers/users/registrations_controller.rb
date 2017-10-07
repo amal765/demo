@@ -10,12 +10,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # POST /resource
    def create
     super
-
-    if @group = Group.find(params[:user][:group_ids]).present?
-      @group = Group.find(params[:user][:group_ids])
-      @group.users << @user
-      flash[:info] = "Joined Successully"
-    end
    end
 
   # GET /resource/edit
@@ -33,9 +27,21 @@ class Users::RegistrationsController < Devise::RegistrationsController
      super
    end
 
-  def profile_edit
-    @user = current_user
+  def custom_new
+    @user = User.find(params[ :id])
   end
+
+  def custom_update
+    @user = User.find_by(id: params[:user][:id])
+    respond_to do |format|
+      if @user.update(users_params)
+        format.js {render 'login.js.erb'}
+      else
+        format.js
+      end
+    end
+  end
+
 
   # GET /resource/cancel
   # Forces the session data which is usually expired after sign
@@ -46,6 +52,10 @@ class Users::RegistrationsController < Devise::RegistrationsController
      super
    end
 
+   private
+    def users_params
+      params.require(:user).permit(:first_name, :last_name, :picture, :dob, :email, :password, :password_confirmation, :role_id, :phone_number)
+    end
    protected
 
   # If you have extra params to permit, append them to the sanitizer.
@@ -54,9 +64,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
    end
 
   # If you have extra params to permit, append them to the sanitizer.
-   def configure_account_update_params
-     devise_parameter_sanitizer.permit(:account_update, keys: [:attribute])
-   end
+   # def configure_account_update_params
+   #   devise_parameter_sanitizer.permit(:account_update, keys: [:attribute])
+   # end
 
   # The path used after sign up.
    def after_sign_up_path_for(resource)

@@ -1,6 +1,7 @@
 class TasksController < ApplicationController
   def create
     @task= Task.new(task_params)
+    authorize @task
     respond_to do |format|
       if @task.save
         flash[:info] = "Task Assigned Successfully"

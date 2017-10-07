@@ -47,8 +47,9 @@
         </div>
       <% end %>
     </div>
-    <%= form_for(@user) do |f| %>
-      <p><%= f.file_field :picture, class: "", autofocus: true %></p>
+    <%= form_for(@user, validate: true) do |f| %>
+      <p><%= f.file_field :picture, :value=>'ruby.png'%></p>
+      <%= f.hidden_field :first_name, :value => @user.first_name %>
       <p><%= f.submit "Upload", class: "btn btn-primary fullWidth " %></p>
       <p><%= link_to "Reset Password", edit_user_registration_path, class: "btn btn-primary fullWidth" %></p>
     <% end %>
